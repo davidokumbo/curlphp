@@ -725,7 +725,7 @@ class PayrollController extends Controller
         // echo $nssf1;
         //return $display;
 
-        return json_encode(["paye1" => number_format($paye1, 2), "nssf1" => number_format($nssf1, 2), "nhif1" => number_format($nhif1, 2), "netv" => number_format($z, 2), "gross1" => number_format($gross, 2)]);
+        //return json_encode(["paye1" => number_format($paye1, 2), "nssf1" => number_format($nssf1, 2), "nhif1" => number_format($nhif1, 2), "netv" => number_format($z, 2), "gross1" => number_format($gross, 2)]);
         $currency = Currency::whereNull('organization_id')->orWhere('organization_id', Auth::user()->organization_id)->first();
     }
 

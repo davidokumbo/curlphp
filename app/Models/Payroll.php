@@ -80,6 +80,7 @@ class Payroll extends Model
         foreach ($total_allws as $total_allw) {
             $allw = $total_allw->total_allowances;
         }
+        
         return round($allw, 2);
 
     }
@@ -730,7 +731,7 @@ class Payroll extends Model
                     ->where('instalments', '>', 0)
                     ->where('first_day_month', '<=', $start)
                     ->where('last_day_month', '>=', $start);
-            })->get();
+            })->groupBy('instalments')->get();
 
         foreach ($total_earns as $total_earn) {
             if ($total_earn->instalments >= 1) {
@@ -780,7 +781,7 @@ class Payroll extends Model
                         ->where('job_group_id', $jgroup->id)
                         ->where('first_day_month', '<=', $start)
                         ->where('last_day_month', '>=', $start);
-                })->get();
+                })->groupBy('instalments')->get();
 
             foreach ($total_earns as $total_earn) {
                 if ($total_earn->instalments >= 1) {
@@ -808,7 +809,7 @@ class Payroll extends Model
                         ->where('job_group_id', '!=', $jgroup->id)
                         ->where('first_day_month', '<=', $start)
                         ->where('last_day_month', '>=', $start);
-                })->get();
+                })->groupBy('instalments')->get();
 
             foreach ($total_earns as $total_earn) {
                 if ($total_earn->instalments >= 1) {
@@ -847,7 +848,7 @@ class Payroll extends Model
                     ->where('instalments', '>', 0)
                     ->where('first_day_month', '<=', $start)
                     ->where('last_day_month', '>=', $start);
-            })->get();
+            })->groupBy('instalments')->get();
 
         foreach ($total_earns as $total_earn) {
             if ($total_earn->instalments >= 1) {
@@ -1028,6 +1029,9 @@ class Payroll extends Model
         $total_gross = 0.00;
 
         $total_gross = static::basicpay($id, $period) + static::total_benefits($id, $period);
+       // $total_gross = $total_real_gross-((1.5/100)*$total_real_gross);
+       
+        // $total_gross=
 
         return round($total_gross, 2);
 
@@ -1204,10 +1208,10 @@ class Payroll extends Model
         } else {
             $nssf_amts = DB::table('x_social_security')->get();
             foreach ($nssf_amts as $nssf_amt) {
-                $nssfLowerEarning = $nssf_amt->nssf_lower_earning;
-                $to = $nssf_amt->income_to;
+                $from = $nssf_amt->nssf_lower_earning;
+                $to = $nssf_amt->nssf_upper_earning;
                 if ($total >= $from && $total <= $to) {
-                    $nssfAmt = $nssf_amt->ss_amount_employee;
+                    $nssfAmt = $nssf_amt->max_employee_nssf;
                 }
             }
         }
@@ -1243,7 +1247,6 @@ class Payroll extends Model
 
         $other_ded = 0.00;
 
-
         $deds = DB::table('x_employee_deductions')
             ->join('x_employee', 'x_employee_deductions.employee_id', '=', 'x_employee.id')
             ->select(DB::raw('COALESCE(sum(deduction_amount),0.00) as total_deduction,instalments'))
@@ -1260,7 +1263,7 @@ class Payroll extends Model
                     ->where('instalments', '>', 0)
                     ->where('first_day_month', '<=', $start)
                     ->where('last_day_month', '>=', $start);
-            })->get();
+            })->groupBy('instalments')->get();
         foreach ($deds as $ded) {
             if ($ded->instalments >= 1) {
                 $other_ded = $ded->total_deduction;
@@ -1307,7 +1310,7 @@ class Payroll extends Model
                         ->where('job_group_id', $jgroup->id)
                         ->where('first_day_month', '<=', $start)
                         ->where('last_day_month', '>=', $start);
-                })->get();
+                })->groupBy('instalments')->get();
             foreach ($deds as $ded) {
                 if ($ded->instalments >= 1) {
                     $other_ded = $ded->total_deduction;
@@ -1334,7 +1337,7 @@ class Payroll extends Model
                         ->where('job_group_id', '!=', $jgroup->id)
                         ->where('first_day_month', '<=', $start)
                         ->where('last_day_month', '>=', $start);
-                })->get();
+                })->groupBy('instalments')->get();
             foreach ($deds as $ded) {
                 if ($ded->instalments >= 1) {
                     $other_ded = $ded->total_deduction;
@@ -1372,7 +1375,7 @@ class Payroll extends Model
                     ->where('instalments', '>', 0)
                     ->where('first_day_month', '<=', $start)
                     ->where('last_day_month', '>=', $start);
-            })->get();
+            })->groupBy('instalments')->get();
         foreach ($deds as $ded) {
             if ($ded->instalments >= 1) {
                 $other_ded = $ded->total_deduction;

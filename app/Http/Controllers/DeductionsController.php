@@ -18,9 +18,13 @@ class DeductionsController extends Controller {
      */
     public function index()
     {
-        $deductions = Deduction::all();
+       $deductions = Deduction::all();
+        // $deductions = Deduction::all('deduction_name');
+        // foreach( $deductions as $name){
+        //     echo $name->deduction_name. "<br>";
+        // }
 
-        Audit::logaudit(now('Africa/Nairobi'),Auth::user()->username, 'view', 'viewed deduction list ');
+     Audit::logaudit(now('Africa/Nairobi'),Auth::user()->username='admin@sycum', 'view', 'viewed deduction list ');
 
         return View::make('deductions.index', compact('deductions'));
     }

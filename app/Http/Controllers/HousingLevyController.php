@@ -19,9 +19,13 @@ class HousingLevyController extends Controller
     public function index()
     {
         $hrates = DB::table('housing_levy')->get();
-      
 
         return View::make('housinglevy.index', compact('hrates'));
+        
+        // $hrates = HousingLevy::all('percentage')->first();
+        // $rate=json_decode($hrates);
+        //  $value=$rate->percentage;
+        //   echo $value;
     }
 
     /**
